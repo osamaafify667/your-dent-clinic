@@ -1,0 +1,89 @@
+{
+  "services": [
+    {
+      "id": "svc-1",
+      "slug": "cosmetic-dentistry",
+      "title": "تجميل الأسنان",
+      "titleEn": "Cosmetic Dentistry",
+      "shortDescription": "خيارات تجميلية مثل القشور الخزفية وتصحيح الابتسامة لتحسين مظهر الأسنان.",
+      "shortDescriptionEn": "Cosmetic options such as veneers and smile correction to improve the appearance of your teeth.",
+      "icon": "smile",
+      "image": "/uploads/cosmetic-dentistry.webp"
+    },
+    {
+      "id": "svc-2",
+      "slug": "teeth-whitening",
+      "title": "تبييض الأسنان",
+      "titleEn": "Teeth Whitening",
+      "shortDescription": "إجراء آمن يُجرى تحت إشراف طبي لتفتيح لون الأسنان وتحسين مظهر الابتسامة.",
+      "shortDescriptionEn": "A safe procedure performed under medical supervision to lighten tooth color and enhance your smile.",
+      "icon": "sparkles",
+      "image": "/uploads/teeth-whitening.jpg"
+    },
+    {
+      "id": "svc-3",
+      "slug": "dental-implants",
+      "title": "زراعة الأسنان",
+      "titleEn": "Dental Implants",
+      "shortDescription": "حل طويل الأمد لتعويض الأسنان المفقودة باستخدام غرسات تُثبت في عظم الفك.",
+      "shortDescriptionEn": "A long-term solution for replacing missing teeth using implants fixed in the jawbone.",
+      "icon": "bone",
+      "image": "/uploads/dental-implants.webp"
+    },
+    {
+      "id": "svc-4",
+      "slug": "dental-restorations",
+      "title": "حشو وترميم الأسنان",
+      "titleEn": "Dental Restorations",
+      "shortDescription": "علاج التسوس وترميم الأسنان المتضررة باستخدام حشوات تجميلية متطابقة مع لون السن.",
+      "shortDescriptionEn": "Treatment of cavities and restoration of damaged teeth using aesthetic fillings matched to tooth color.",
+      "icon": "wrench",
+      "image": "/uploads/dental-restorations.webp"
+    },
+    {
+      "id": "svc-5",
+      "slug": "root-canal",
+      "title": "علاج الجذور والأعصاب",
+      "titleEn": "Root Canal Treatment",
+      "shortDescription": "علاج يهدف إلى إنقاذ السن المصاب بالتهاب أو تلف في العصب بدلاً من خلعه.",
+      "shortDescriptionEn": "A treatment aimed at saving a tooth with nerve inflammation or damage instead of extracting it.",
+      "icon": "activity",
+      "image": "/uploads/root-canal.webp"
+    },
+    {
+      "id": "svc-6",
+      "slug": "teeth-cleaning",
+      "title": "تنظيف الأسنان الاحترافي",
+      "titleEn": "Professional Teeth Cleaning",
+      "shortDescription": "إزالة الجير والتصبغات وتلميع الأسنان للحفاظ على صحة الفم واللثة.",
+      "shortDescriptionEn": "Removal of tartar and stains and polishing teeth to maintain oral and gum health.",
+      "icon": "droplets",
+      "image": "/uploads/teeth-cleaning.jpg"
+    },
+    {
+      "id": "svc-7",
+      "slug": "pediatric-dentistry",
+      "title": "طب أسنان الأطفال",
+      "titleEn": "Pediatric Dentistry",
+      "shortDescription": "رعاية أسنان الأطفال في بيئة مريحة ومصممة لتجربة إيجابية وآمنة.",
+      "shortDescriptionEn": "Dental care for children in a comfortable environment designed for a positive, safe experience.",
+      "icon": "baby",
+      "image": "/uploads/pediatric-dentistry.jpg"
+    }
+  ],
+  "doctors": [],
+  "settings": {
+    "isOpen": true,
+    "hours": [
+      {
+        "days": "السبت – الخميس",
+        "hours": "4:00 مساءً – 11:00 مساءً"
+      },
+      {
+        "days": "الجمعة",
+        "hours": "مغلق",
+        "closed": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #f7f8f6;
+  --color-surface: #ffffff;
+  --color-primary: #176b68;
+  --color-primary-dark: #0e4f4c;
+  --color-mint: #dcebe7;
+  --color-charcoal: #242d2c;
+  --color-muted: #5b6663;
+  --font-sans: var(--font-plex-arabic), "Segoe UI", system-ui, -apple-system,
+    sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background font-sans text-charcoal antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-mint);
+    color: var(--color-charcoal);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

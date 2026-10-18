@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" role="img" aria-label="About Your Dent Clinic">
+  <circle cx="400" cy="320" r="252" fill="#DCEBE7"/>
+  <circle cx="400" cy="320" r="252" fill="none" stroke="#176B68" stroke-opacity="0.25" stroke-width="2"/>
+  <circle cx="400" cy="320" r="192" fill="#FFFFFF" stroke="#176B68" stroke-opacity="0.12" stroke-width="2"/>
+  <circle cx="400" cy="320" r="222" fill="none" stroke="#176B68" stroke-width="2" stroke-dasharray="2 12" stroke-linecap="round" opacity="0.35"/>
+  <g transform="translate(400 320) scale(1.9) translate(-24 -24)">
+    <path d="M24 10 C29 10 34 14 34 20 C34 24 33 27 32 30 C31 33 30 36 28 37 C26.5 37.8 25 37 24 35 C23 37 21.5 37.8 20 37 C18 36 17 33 16 30 C15 27 14 24 14 20 C14 14 19 10 24 10 Z" fill="none" stroke="#176B68" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <circle cx="400" cy="68" r="10" fill="#176B68"/>
+  <circle cx="626" cy="320" r="8" fill="none" stroke="#176B68" stroke-width="2.5"/>
+  <circle cx="400" cy="572" r="10" fill="#176B68" opacity="0.5"/>
+  <g stroke="#176B68" stroke-width="3" stroke-linecap="round" opacity="0.5">
+    <path d="M238 176 h22 M249 165 v22"/>
+    <path d="M540 462 h18 M549 453 v18"/>
+  </g>
+  <g fill="#176B68" opacity="0.25">
+    <circle cx="560" cy="180" r="4"/>
+    <circle cx="584" cy="180" r="4"/>
+    <circle cx="608" cy="180" r="4"/>
+    <circle cx="560" cy="204" r="4"/>
+    <circle cx="584" cy="204" r="4"/>
+    <circle cx="608" cy="204" r="4"/>
+  </g>
+</svg>
