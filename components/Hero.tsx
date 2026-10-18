@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, CalendarCheck, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { clinic } from "@/data/clinic";
+import { Container } from "./Container";
 import { Reveal } from "./Reveal";
 import { useLang } from "./useLang";
 import { ui } from "@/data/i18n";
@@ -63,7 +64,7 @@ export function Hero() {
 
   return (
     <section aria-labelledby="hero-title" className="relative overflow-hidden">
-      <div className="grid items-center gap-8 py-8 sm:py-12 sm:gap-10 lg:grid-cols-2 lg:gap-16 lg:py-24">
+      <Container className="grid items-center gap-8 py-8 sm:py-12 sm:gap-10 lg:grid-cols-2 lg:gap-16 lg:py-24">
         <div className="flex flex-col items-start gap-4 sm:gap-6">
           <Reveal>
             <span
@@ -131,7 +132,7 @@ export function Hero() {
             </div>
           </div>
         </Reveal>
-      </div>
+      </Container>
     </section>
   );
 }
