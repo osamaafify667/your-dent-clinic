@@ -39,11 +39,10 @@ export const clinic: ClinicInfo = {
   mapsEmbedUrl:
     "https://www.google.com/maps?q=Othman%20Towers%2C%20Nile%20Corniche%2C%20Maadi%2C%20Cairo&output=embed",
   hours: [
-    { days: "السبت – الخميس", hours: "4:00 مساءً – 11:00 مساءً" },
-    { days: "الجمعة", hours: "مغلق", closed: true },
+    { days: "من السبت الي الخميس", hours: "من 4:00 مساءً الي 11:00 مساءً" },
   ],
-  hoursNote: "ساعات العمل قيد التأكيد من إدارة العيادة.",
-  hoursVerified: false,
+  hoursNote: "",
+  hoursVerified: true,
   keywordsAr: [
     "عيادة أسنان المعادي",
     "طبيب أسنان القاهرة",

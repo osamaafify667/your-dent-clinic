@@ -109,9 +109,7 @@ export default function ContactPage() {
                   {h.days}: {h.hours}
                 </p>
               ))}
-              {clinic.hoursVerified === false && (
-                <p className="text-xs text-muted/80">{clinic.hoursNote}</p>
-              )}
+              <p className="text-sm text-muted">Friday: Closed</p>
             </div>
           </div>
           <div className="flex items-start gap-4">

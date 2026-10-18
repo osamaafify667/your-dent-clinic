@@ -51,8 +51,8 @@ export function Hero() {
 
   return (
     <section aria-labelledby="hero-title" className="relative overflow-hidden">
-      <div className="grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:py-24">
-        <div className="flex flex-col items-start gap-6">
+      <div className="grid items-center gap-8 py-8 sm:py-12 sm:gap-10 lg:grid-cols-2 lg:gap-16 lg:py-24">
+        <div className="flex flex-col items-start gap-4 sm:gap-6">
           <Reveal>
             <span
               className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium ${
@@ -71,13 +71,13 @@ export function Hero() {
           <Reveal delay={100}>
             <h1
               id="hero-title"
-              className="text-4xl font-bold leading-[1.25] text-charcoal sm:text-5xl lg:text-[3.4rem]"
+              className="text-[1.65rem] font-bold leading-[1.3] text-charcoal sm:text-5xl lg:text-[3.4rem]"
             >
               {heroCopy.title}
             </h1>
           </Reveal>
           <Reveal delay={200}>
-            <p className="max-w-xl text-lg leading-relaxed text-muted">
+            <p className="max-w-xl text-sm leading-relaxed text-muted sm:text-lg">
               {heroCopy.text}
             </p>
           </Reveal>
