@@ -28,6 +28,7 @@ type ServiceRecord = {
   shortDescription: string;
   shortDescriptionEn: string;
   icon: string;
+  image?: string;
 };
 
 type DoctorRecord = {
@@ -42,7 +43,8 @@ type DoctorRecord = {
 type Settings = {
   isOpen: boolean;
   autoStatus: boolean;
-  hours: { days: string; hours: string; closed?: boolean }[];
+  closedMessage: string;
+  closedMessageEn: string;
   schedule: { days: number[]; open?: string; close?: string; closed?: boolean }[];
 };
 
@@ -63,6 +65,7 @@ const emptyService: Omit<ServiceRecord, "id"> = {
   shortDescription: "",
   shortDescriptionEn: "",
   icon: "smile",
+  image: "",
 };
 
 const emptyDoctor: Omit<DoctorRecord, "id"> = {
@@ -78,10 +81,9 @@ const emptyDoctor: Omit<DoctorRecord, "id"> = {
 
 const labelClass = "mb-1.5 block text-xs font-semibold text-charcoal";
 
-const uploadDoctorImage = async (doctorId: string, file: File) => {
+const uploadImage = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("doctorId", doctorId);
     const res = await fetch("/api/upload", { method: "POST", body: formData });
     if (!res.ok) throw new Error("فشل رفع الصورة");
     const data = await res.json();
@@ -370,14 +372,25 @@ export default function AdminDashboard() {
                     className="flex items-center justify-between gap-4 rounded-xl border border-charcoal/10 bg-surface p-4"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-mint text-primary">
-                        {iconOptions.find((i) => i.value === service.icon)?.Icon
-                          ? (() => {
-                              const Opt = iconOptions.find((i) => i.value === service.icon)!;
-                              return <Opt.Icon className="h-5 w-5" />;
-                            })()
-                          : <Smile className="h-5 w-5" />}
-                      </span>
+                      {service.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={service.image}
+                          alt={service.title}
+                          className="h-10 w-14 rounded-lg border border-charcoal/10 object-cover"
+                          width={56}
+                          height={40}
+                        />
+                      ) : (
+                        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-mint text-primary">
+                          {iconOptions.find((i) => i.value === service.icon)?.Icon
+                            ? (() => {
+                                const Opt = iconOptions.find((i) => i.value === service.icon)!;
+                                return <Opt.Icon className="h-5 w-5" />;
+                              })()
+                            : <Smile className="h-5 w-5" />}
+                        </span>
+                      )}
                       <div>
                         <p className="text-sm font-semibold text-charcoal">{service.title}</p>
                         <p className="text-xs text-muted">{service.titleEn}</p>
@@ -525,54 +538,36 @@ export default function AdminDashboard() {
               </div>
 
               <div className="rounded-xl border border-charcoal/10 bg-surface p-5">
-                <p className="mb-4 text-sm font-semibold text-charcoal">ساعات العمل</p>
+                <p className="mb-1 text-sm font-semibold text-charcoal">رسالة الإغلاق</p>
+                <p className="mb-4 text-xs text-muted">تظهر في الشريط الأصفر أعلى الصفحة عندما تكون العيادة مقفلة</p>
                 <div className="flex flex-col gap-4">
-                  {settings.hours.map((hour, index) => (
-                    <div key={index} className="grid items-end gap-3 sm:grid-cols-2">
-                      <div>
-                        <label className={labelClass}>الأيام</label>
-                        <input
-                          value={hour.days}
-                          onChange={(e) => {
-                            const hours = [...settings.hours];
-                            hours[index] = { ...hour, days: e.target.value };
-                            setSettings({ ...settings, hours });
-                          }}
-                          className={inputClass}
-                        />
-                      </div>
-                      <div>
-                        <label className={labelClass}>المواعيد</label>
-                        <input
-                          value={hour.hours}
-                          onChange={(e) => {
-                            const hours = [...settings.hours];
-                            hours[index] = { ...hour, hours: e.target.value };
-                            setSettings({ ...settings, hours });
-                          }}
-                          className={inputClass}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                  <button
-                    onClick={() =>
-                      setSettings({
-                        ...settings,
-                        hours: [...settings.hours, { days: "", hours: "" }],
-                      })
-                    }
-                    className="inline-flex items-center gap-2 self-start rounded-lg border border-dashed border-charcoal/30 px-4 py-2 text-sm font-medium text-muted transition-colors hover:border-primary hover:text-primary"
-                  >
-                    <Plus className="h-4 w-4" />
-                    إضافة صف مواعيد
-                  </button>
+                  <div>
+                    <label className={labelClass}>النص بالعربي</label>
+                    <textarea
+                      value={settings.closedMessage ?? ""}
+                      onChange={(e) => setSettings({ ...settings, closedMessage: e.target.value })}
+                      rows={2}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>النص بالإنجليزي</label>
+                    <textarea
+                      value={settings.closedMessageEn ?? ""}
+                      onChange={(e) => setSettings({ ...settings, closedMessageEn: e.target.value })}
+                      rows={2}
+                      dir="ltr"
+                      className={`${inputClass} text-left`}
+                    />
+                  </div>
                 </div>
               </div>
 
               <div className="rounded-xl border border-charcoal/10 bg-surface p-5">
-                <p className="mb-1 text-sm font-semibold text-charcoal">جدول الحالة التلقائية</p>
-                <p className="mb-4 text-xs text-muted">هذه المواعيد تتحكم في فتح وغلق العيادة تلقائياً</p>
+                <p className="mb-1 text-sm font-semibold text-charcoal">ساعات العمل</p>
+                <p className="mb-4 text-xs text-muted">
+                  اختر الأيام ووقت الفتح والغلق — العيادة تفتح وتغلق تلقائياً حسب المواعيد دي، وهي نفسها اللي تظهر في الموقع.
+                </p>
                 <div className="flex flex-col gap-4">
                   {settings.schedule.map((slot, index) => (
                     <div key={index} className="rounded-xl border border-charcoal/10 bg-background p-4">
@@ -741,23 +736,54 @@ export default function AdminDashboard() {
               <textarea value={editingService.shortDescriptionEn} onChange={(e) => setEditingService({ ...editingService, shortDescriptionEn: e.target.value })} rows={3} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>الأيقونة</label>
-              <div className="flex flex-wrap gap-2">
-                {iconOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setEditingService({ ...editingService, icon: opt.value })}
-                    aria-label={opt.label}
-                    className={`flex h-10 w-10 items-center justify-center rounded-lg border transition-colors ${
-                      editingService.icon === opt.value
-                        ? "border-primary bg-mint text-primary"
-                        : "border-charcoal/15 text-muted hover:border-primary/40"
-                    }`}
-                  >
-                    <opt.Icon className="h-5 w-5" />
-                  </button>
-                ))}
+              <label className={labelClass}>صورة الخدمة</label>
+              <div className="flex items-center gap-4">
+                {editingService.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={editingService.image}
+                    alt="صورة الخدمة"
+                    className="h-20 w-28 rounded-lg border border-charcoal/10 object-cover"
+                    width={112}
+                    height={80}
+                  />
+                ) : (
+                  <span className="flex h-20 w-28 items-center justify-center rounded-lg border border-dashed border-charcoal/20 text-xs text-muted">
+                    لا صورة
+                  </span>
+                )}
+                <div className="flex flex-col gap-2">
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-charcoal/20 px-4 py-2.5 text-sm font-medium text-charcoal transition-colors hover:border-primary hover:text-primary">
+                    <ImagePlus className="h-4 w-4" />
+                    <span>{editingService.image ? "تغيير الصورة" : "رفع صورة"}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const url = await uploadImage(file);
+                          setEditingService({ ...editingService, image: url });
+                          showToast("تم رفع الصورة");
+                        } catch {
+                          showToast("فشل رفع الصورة");
+                        }
+                      }}
+                    />
+                  </label>
+                  {editingService.image && (
+                    <button
+                      type="button"
+                      onClick={() => setEditingService({ ...editingService, image: "" })}
+                      className="inline-flex items-center gap-2 self-start text-xs font-medium text-red-600 hover:underline"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      إزالة الصورة
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex gap-3 pt-2">
@@ -827,7 +853,7 @@ export default function AdminDashboard() {
                       const file = e.target.files?.[0];
                       if (!file) return;
                       try {
-                        const url = await uploadDoctorImage(editingDoctor.id, file);
+                        const url = await uploadImage(file);
                         setEditingDoctor({ ...editingDoctor, image: url });
                         showToast("تم رفع الصورة");
                       } catch {

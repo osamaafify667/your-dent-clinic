@@ -6,6 +6,13 @@ import { useLang } from "./useLang";
 
 type Status = {
   isOpen: boolean;
+  closedMessage?: string;
+  closedMessageEn?: string;
+};
+
+const fallback = {
+  ar: "نورنا بكرة لأننا قفلنا — يمكنك حجز موعد عبر واتساب وسيتم التواصل معك غداً.",
+  en: "See you tomorrow — we are closed. You can book an appointment via WhatsApp and we will contact you tomorrow.",
 };
 
 export function StatusBanner() {
@@ -14,23 +21,25 @@ export function StatusBanner() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/status")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled) setStatus(data);
-      })
-      .catch(() => {});
+    const check = () => {
+      fetch("/api/status")
+        .then((res) => res.json())
+        .then((data) => {
+          if (!cancelled) setStatus(data);
+        })
+        .catch(() => {});
+    };
+    check();
+    const interval = window.setInterval(check, 60000);
     return () => {
       cancelled = true;
+      window.clearInterval(interval);
     };
   }, []);
 
   if (!status || status.isOpen) return null;
 
-  const copy = {
-    ar: "نورنا بكرة لأننا قفلنا — يمكنك حجز موعد عبر واتساب وسيتم التواصل معك غداً.",
-    en: "See you tomorrow — we are closed. You can book an appointment via WhatsApp and we will contact you tomorrow.",
-  }[lang];
+  const copy = (lang === "ar" ? status.closedMessage : status.closedMessageEn) || fallback[lang];
 
   return (
     <div role="status" className="border-b border-amber-200 bg-amber-50">

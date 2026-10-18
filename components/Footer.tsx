@@ -7,11 +7,13 @@ import { Logo } from "./Logo";
 import { Container } from "./Container";
 import { useLang } from "./useLang";
 import { ui } from "@/data/i18n";
+import { useHoursText } from "./WorkingHours";
 
 export function Footer() {
   const lang = useLang();
   const t = ui[lang];
   const homeHref = lang === "ar" ? "/" : "/en";
+  const hours = useHoursText();
 
   const quickLinks = [
     { href: lang === "ar" ? "/services" : "/en/services", label: t.nav.services },
@@ -85,12 +87,10 @@ export function Footer() {
           <div>
             <h2 className="mb-4 text-sm font-semibold tracking-wide text-white/90">{t.hours}</h2>
             <ul className="flex flex-col gap-3 text-sm text-white/70">
-              {clinic.hours.map((h) => (
-                <li key={h.days} className="flex items-start gap-2.5">
+              {hours.map((line, i) => (
+                <li key={i} className="flex items-start gap-2.5">
                   <Clock className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                  <span>
-                    {h.days}: {h.hours}
-                  </span>
+                  <span>{line}</span>
                 </li>
               ))}
             </ul>

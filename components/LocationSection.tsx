@@ -6,10 +6,12 @@ import { Container } from "./Container";
 import { Reveal } from "./Reveal";
 import { useLang } from "./useLang";
 import { ui } from "@/data/i18n";
+import { useHoursText } from "./WorkingHours";
 
 export function LocationSection() {
   const lang = useLang();
   const t = ui[lang].location;
+  const hours = useHoursText();
 
   return (
     <section aria-labelledby="location-title">
@@ -37,14 +39,11 @@ export function LocationSection() {
               </span>
               <span className="flex flex-col gap-1.5">
                 <span className="text-sm font-semibold text-charcoal">{t.workHours}</span>
-                {clinic.hours.map((h) => (
-                  <span key={h.days} className="text-sm text-muted">
-                    {h.days}: {h.hours}
+                {hours.map((line, i) => (
+                  <span key={i} className="text-sm text-muted">
+                    {line}
                   </span>
                 ))}
-                {clinic.hoursVerified === false && (
-                  <span className="text-xs text-muted/80">{clinic.hoursNote}</span>
-                )}
               </span>
             </li>
           </ul>

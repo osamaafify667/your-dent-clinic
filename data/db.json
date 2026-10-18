@@ -71,16 +71,23 @@
       "image": "/uploads/pediatric-dentistry.jpg"
     }
   ],
-  "doctors": [],
+  "doctors": [
+    {
+      "id": "a2d5f4fd-1bbe-468b-a094-bd7f09a5aca0",
+      "name": "احمد عبدالكريم ",
+      "specialty": "تبييض الأسنان",
+      "qualifications": [
+        "ماجستير تجميل الاسنان جامعة القاهرة "
+      ],
+      "bio": "خبرة 5 سنوات ",
+      "image": "/uploads/551951da-8d2a-40b1-9ffb-5e0b1f04710e.jpg"
+    }
+  ],
   "settings": {
     "isOpen": true,
-    "hours": [
-      {
-        "days": "من السبت الي الخميس",
-        "hours": "من 4:00 مساءً الي 11:00 مساءً"
-      }
-    ],
     "autoStatus": true,
+    "closedMessage": "نورنا بكرة لأننا قفلنا — يمكنك حجز موعد عبر واتساب وسيتم التواصل معك غداً.",
+    "closedMessageEn": "See you tomorrow — we are closed. You can book an appointment via WhatsApp and we will contact you tomorrow.",
     "schedule": [
       {
         "days": [
@@ -92,7 +99,7 @@
           4
         ],
         "open": "16:00",
-        "close": "23:00"
+        "close": "17:50"
       },
       {
         "days": [

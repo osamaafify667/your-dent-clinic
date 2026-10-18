@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminLoggedIn } from "@/lib/auth";
-import { getDb, saveDb } from "@/lib/store";
+import { isImageStoreEnabled, saveImage } from "@/lib/store";
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
@@ -13,10 +13,9 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
-    const doctorId = formData.get("doctorId") as string | null;
 
-    if (!file || !doctorId) {
-      return NextResponse.json({ error: "ملف أو معرّف الطبيب مفقود" }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: "الملف مفقود" }, { status: 400 });
     }
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -30,22 +29,23 @@ export async function POST(request: Request) {
     }
 
     const ext = file.type === "image/png" ? ".png" : file.type === "image/webp" ? ".webp" : ".jpg";
-    const filename = `${crypto.randomUUID()}${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    fs.mkdirSync(uploadDir, { recursive: true });
+    const id = crypto.randomUUID();
     const buffer = Buffer.from(await file.arrayBuffer());
-    fs.writeFileSync(path.join(uploadDir, filename), buffer);
 
-    const db = await getDb();
-    const doctor = db.doctors.find((d) => d.id === doctorId);
-    if (!doctor) {
-      return NextResponse.json({ error: "الطبيب غير موجود" }, { status: 404 });
+    if (isImageStoreEnabled()) {
+      const stored = await saveImage(id, buffer, file.type);
+      if (!stored) {
+        return NextResponse.json({ error: "فشل حفظ الصورة" }, { status: 500 });
+      }
+      return NextResponse.json({ url: `/api/images/${id}` }, { status: 201 });
     }
 
-    doctor.image = `/uploads/${filename}`;
-    await saveDb(db);
+    const filename = `${id}${ext}`;
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    fs.mkdirSync(uploadDir, { recursive: true });
+    fs.writeFileSync(path.join(uploadDir, filename), buffer);
 
-    return NextResponse.json({ url: doctor.image }, { status: 201 });
+    return NextResponse.json({ url: `/uploads/${filename}` }, { status: 201 });
   } catch {
     return NextResponse.json({ error: "فشل رفع الصورة" }, { status: 500 });
   }

@@ -4,6 +4,7 @@ import { clinic, siteUrl, whatsappLink } from "@/data/clinic";
 import { Container } from "@/components/Container";
 import { LocationSection } from "@/components/LocationSection";
 import { Reveal } from "@/components/Reveal";
+import { HoursLines } from "@/components/WorkingHours";
 
 export const metadata: Metadata = {
   title: "تواصل معنا",
@@ -103,12 +104,7 @@ export default function ContactPage() {
               <h2 id="hours-title" className="text-xl font-bold text-charcoal">
                 ساعات العمل
               </h2>
-              {clinic.hours.map((h) => (
-                <p key={h.days} className="text-sm text-muted">
-                  {h.days}: {h.hours}
-                </p>
-              ))}
-              <p className="text-sm text-muted">الجمعة: مغلق</p>
+              <HoursLines className="text-sm text-muted" />
             </div>
           </div>
           <div className="flex items-start gap-4">

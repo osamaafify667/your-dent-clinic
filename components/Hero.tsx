@@ -14,19 +14,31 @@ export function Hero() {
   const appointmentHref = lang === "ar" ? "/appointment" : "/en/appointment";
   const servicesHref = lang === "ar" ? "/services" : "/en/services";
   const [isOpen, setIsOpen] = useState<boolean | null>(null);
+  const [hoursLines, setHoursLines] = useState<string[] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/status")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled) setIsOpen(data.isOpen);
-      })
-      .catch(() => {});
+    const check = () => {
+      fetch("/api/status")
+        .then((res) => res.json())
+        .then((data) => {
+          if (cancelled) return;
+          setIsOpen(data.isOpen);
+          const next = data.hoursText?.[lang];
+          setHoursLines(Array.isArray(next) && next.length ? next : null);
+        })
+        .catch(() => {});
+    };
+    check();
+    const interval = window.setInterval(check, 60000);
     return () => {
       cancelled = true;
+      window.clearInterval(interval);
     };
-  }, []);
+  }, [lang]);
+
+  const hoursValue = hoursLines?.join(" · ") ??
+    (lang === "ar" ? "السبت – الخميس: 4 – 11 مساءً" : "Sat – Thu: 4 PM – 11 PM");
 
   const heroCopy = {
     ar: {
@@ -36,7 +48,7 @@ export function Hero() {
       primary: "احجز موعدك",
       secondary: "اكتشف خدماتنا",
       hoursTitle: "ساعات العمل",
-      hoursValue: "السبت – الخميس: 4 – 11 مساءً",
+      hoursValue,
     },
     en: {
       tagline: isOpen === false ? "See you tomorrow — we are closed" : isOpen === true ? "The clinic is open now" : "Dental clinic in Maadi, Cairo",
@@ -45,7 +57,7 @@ export function Hero() {
       primary: "Book Appointment",
       secondary: "Explore Our Services",
       hoursTitle: "Working Hours",
-      hoursValue: "Sat – Thu: 4 PM – 11 PM",
+      hoursValue,
     },
   }[lang];
 
