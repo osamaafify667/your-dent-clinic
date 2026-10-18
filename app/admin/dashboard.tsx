@@ -43,7 +43,7 @@ type Settings = {
   isOpen: boolean;
   autoStatus: boolean;
   hours: { days: string; hours: string; closed?: boolean }[];
-  schedule: { days: number[]; open: string; close: string; closed?: boolean }[];
+  schedule: { days: number[]; open?: string; close?: string; closed?: boolean }[];
 };
 
 const iconOptions = [
@@ -566,6 +566,129 @@ export default function AdminDashboard() {
                   >
                     <Plus className="h-4 w-4" />
                     إضافة صف مواعيد
+                  </button>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-charcoal/10 bg-surface p-5">
+                <p className="mb-1 text-sm font-semibold text-charcoal">جدول الحالة التلقائية</p>
+                <p className="mb-4 text-xs text-muted">هذه المواعيد تتحكم في فتح وغلق العيادة تلقائياً</p>
+                <div className="flex flex-col gap-4">
+                  {settings.schedule.map((slot, index) => (
+                    <div key={index} className="rounded-xl border border-charcoal/10 bg-background p-4">
+                      <div className="mb-3 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-charcoal">فترة {index + 1}</span>
+                        <div className="flex items-center gap-2">
+                          <label className="flex cursor-pointer items-center gap-2 text-xs text-muted">
+                            <input
+                              type="checkbox"
+                              checked={!!slot.closed}
+                              onChange={(e) => {
+                                const schedule = [...settings.schedule];
+                                if (e.target.checked) {
+                                  schedule[index] = { days: slot.days, closed: true };
+                                } else {
+                                  schedule[index] = { days: slot.days, open: "16:00", close: "23:00" };
+                                }
+                                setSettings({ ...settings, schedule });
+                              }}
+                              className="h-4 w-4 accent-primary"
+                            />
+                            مغلق طول اليوم
+                          </label>
+                          {settings.schedule.length > 1 && (
+                            <button
+                              onClick={() => {
+                                const schedule = settings.schedule.filter((_, i) => i !== index);
+                                setSettings({ ...settings, schedule });
+                              }}
+                              aria-label={`حذف الفترة ${index + 1}`}
+                              className="flex h-8 w-8 items-center justify-center rounded-lg border border-charcoal/15 text-charcoal transition-colors hover:border-red-300 hover:text-red-600"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {!slot.closed && (
+                        <div className="mb-3 grid grid-cols-2 gap-3">
+                          <div>
+                            <label className={labelClass}>من (24 ساعة)</label>
+                            <input
+                              type="time"
+                              value={slot.open || "16:00"}
+                              onChange={(e) => {
+                                const schedule = [...settings.schedule];
+                                schedule[index] = { ...slot, open: e.target.value };
+                                setSettings({ ...settings, schedule });
+                              }}
+                              dir="ltr"
+                              className={`${inputClass} text-left`}
+                            />
+                          </div>
+                          <div>
+                            <label className={labelClass}>إلى (24 ساعة)</label>
+                            <input
+                              type="time"
+                              value={slot.close || "23:00"}
+                              onChange={(e) => {
+                                const schedule = [...settings.schedule];
+                                schedule[index] = { ...slot, close: e.target.value };
+                                setSettings({ ...settings, schedule });
+                              }}
+                              dir="ltr"
+                              className={`${inputClass} text-left`}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <div>
+                        <label className={labelClass}>الأيام</label>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { value: 6, label: "السبت" },
+                            { value: 0, label: "الأحد" },
+                            { value: 1, label: "الاثنين" },
+                            { value: 2, label: "الثلاثاء" },
+                            { value: 3, label: "الأربعاء" },
+                            { value: 4, label: "الخميس" },
+                            { value: 5, label: "الجمعة" },
+                          ].map((d) => (
+                            <button
+                              key={d.value}
+                              type="button"
+                              onClick={() => {
+                                const schedule = [...settings.schedule];
+                                const days = slot.days.includes(d.value)
+                                  ? slot.days.filter((day) => day !== d.value)
+                                  : [...slot.days, d.value];
+                                schedule[index] = { ...slot, days };
+                                setSettings({ ...settings, schedule });
+                              }}
+                              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                                slot.days.includes(d.value)
+                                  ? "bg-primary text-white"
+                                  : "border border-charcoal/20 text-charcoal hover:border-primary hover:text-primary"
+                              }`}
+                            >
+                              {d.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        schedule: [...settings.schedule, { days: [6, 0, 1, 2, 3, 4], open: "16:00", close: "23:00" }],
+                      })
+                    }
+                    className="inline-flex items-center gap-2 self-start rounded-lg border border-dashed border-charcoal/30 px-4 py-2 text-sm font-medium text-muted transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <Plus className="h-4 w-4" />
+                    إضافة فترة
                   </button>
                 </div>
               </div>
