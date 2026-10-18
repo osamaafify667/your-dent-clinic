@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarCheck, CheckCircle2 } from "lucide-react";
-import { getService, services } from "@/data/services";
+import { mergeServices } from "@/lib/store";
 import { siteUrl } from "@/data/clinic";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
 import { ServiceCard } from "@/components/ServiceCard";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const services = await mergeServices();
   return services.map((s) => ({ slug: s.slug }));
 }
 
@@ -18,7 +19,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = getService(slug);
+  const services = await mergeServices();
+  const service = services.find((s) => s.slug === slug);
   if (!service) return {};
   return {
     title: service.titleEn,
@@ -38,7 +40,8 @@ export default async function ServiceDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const service = getService(slug);
+  const services = await mergeServices();
+  const service = services.find((s) => s.slug === slug);
   if (!service) notFound();
 
   const related = services.filter((s) => s.slug !== slug).slice(0, 3);

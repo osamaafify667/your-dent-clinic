@@ -3,7 +3,7 @@ import { UserRound } from "lucide-react";
 import { Container } from "@/components/Container";
 import { DoctorCard } from "@/components/DoctorCard";
 import { AppointmentCTA } from "@/components/AppointmentCTA";
-import { doctors } from "@/data/team";
+import { mergeDoctors } from "@/lib/store";
 import { siteUrl } from "@/data/clinic";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function TeamPage() {
+export default async function TeamPage() {
   return (
     <>
       <section aria-labelledby="page-title" className="border-b border-charcoal/10 bg-surface">
@@ -33,9 +33,9 @@ export default function TeamPage() {
         </Container>
       </section>
 
-      {doctors.length > 0 ? (
+      {(await mergeDoctors()).length > 0 ? (
         <Container className="grid gap-6 py-16 sm:grid-cols-2 sm:py-20 lg:grid-cols-3">
-          {doctors.map((doctor) => (
+          {(await mergeDoctors()).map((doctor) => (
             <DoctorCard key={doctor.id} doctor={doctor} />
           ))}
         </Container>

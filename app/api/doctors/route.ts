@@ -6,7 +6,7 @@ export async function GET() {
   if (!(await isAdminLoggedIn())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  return NextResponse.json(getDb().doctors);
+  return NextResponse.json((await getDb()).doctors);
 }
 
 export async function POST(request: Request) {
@@ -15,16 +15,17 @@ export async function POST(request: Request) {
   }
   try {
     const doctor = (await request.json()) as DoctorRecord;
-    const db = getDb();
+    const db = await getDb();
     const record: DoctorRecord = {
       id: doctor.id || crypto.randomUUID(),
       name: doctor.name,
       specialty: doctor.specialty,
       qualifications: doctor.qualifications || [],
       bio: doctor.bio || "",
+      image: doctor.image,
     };
     db.doctors = [...db.doctors.filter((d) => d.id !== record.id), record];
-    saveDb(db);
+    await saveDb(db);
     return NextResponse.json(record, { status: 201 });
   } catch {
     return NextResponse.json({ error: "خطأ في حفظ الطبيب" }, { status: 400 });

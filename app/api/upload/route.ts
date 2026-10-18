@@ -36,14 +36,14 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     fs.writeFileSync(path.join(uploadDir, filename), buffer);
 
-    const db = getDb();
+    const db = await getDb();
     const doctor = db.doctors.find((d) => d.id === doctorId);
     if (!doctor) {
       return NextResponse.json({ error: "الطبيب غير موجود" }, { status: 404 });
     }
 
     doctor.image = `/uploads/${filename}`;
-    saveDb(db);
+    await saveDb(db);
 
     return NextResponse.json({ url: doctor.image }, { status: 201 });
   } catch {

@@ -6,7 +6,7 @@ export async function GET() {
   if (!(await isAdminLoggedIn())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  return NextResponse.json(getDb().settings);
+  return NextResponse.json((await getDb()).settings);
 }
 
 export async function PUT(request: Request) {
@@ -15,9 +15,9 @@ export async function PUT(request: Request) {
   }
   try {
     const settings = await request.json();
-    const db = getDb();
+    const db = await getDb();
     db.settings = settings;
-    saveDb(db);
+    await saveDb(db);
     return NextResponse.json(settings);
   } catch {
     return NextResponse.json({ error: "خطأ في الحفظ" }, { status: 400 });

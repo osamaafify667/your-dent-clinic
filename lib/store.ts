@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { Redis } from "@upstash/redis";
 import { services as defaultServices, doctors as defaultDoctors } from "@/data/content";
 
 export type ServiceRecord = {
@@ -14,6 +15,7 @@ export type ServiceRecord = {
   whatToExpect: string[];
   whatToExpectEn: string[];
   icon: "smile" | "sparkles" | "bone" | "wrench" | "activity" | "droplets" | "baby";
+  image?: string;
 };
 
 export type DoctorRecord = {
@@ -37,10 +39,11 @@ export type Db = {
 };
 
 const dbPath = path.join(process.cwd(), "data", "db.json");
+const REDIS_KEY = "yourdent:db";
 
 const defaultDb: Db = {
-  services: defaultServices.map((s, i) => ({
-    id: `svc-${i + 1}`,
+  services: defaultServices.map((s) => ({
+    id: s.id,
     slug: s.slug,
     title: s.title,
     titleEn: s.titleEn,
@@ -52,57 +55,86 @@ const defaultDb: Db = {
     whatToExpectEn: s.whatToExpectEn,
     icon: s.icon,
   })),
-  doctors: defaultDoctors.map((d, i) => ({
-    id: `doc-${i + 1}`,
-    name: d.name,
-    specialty: d.specialty,
-    qualifications: d.qualifications,
-    bio: d.bio,
-  })),
+  doctors: defaultDoctors,
   settings: {
     isOpen: true,
-    hours: [
-      { days: "السبت – الخميس", hours: "4:00 مساءً – 11:00 مساءً" },
-      { days: "الجمعة", hours: "مغلق", closed: true },
-    ],
+    hours: [{ days: "من السبت الي الخميس", hours: "من 4:00 مساءً الي 11:00 مساءً" }],
   },
 };
 
+function getRedis(): Redis | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  try {
+    return new Redis({ url, token });
+  } catch {
+    return null;
+  }
+}
+
 let cache: Db | null = null;
 
-export function getDb(): Db {
+async function loadDb(): Promise<Db> {
   if (cache) return cache;
+
+  const redis = getRedis();
+  if (redis) {
+    try {
+      const data = (await redis.get(REDIS_KEY)) as Db | null;
+      if (data) {
+        cache = data;
+        return cache;
+      }
+    } catch {
+      // fall through to file system
+    }
+  }
+
   try {
     const raw = fs.readFileSync(dbPath, "utf-8");
     cache = JSON.parse(raw) as Db;
   } catch {
     cache = defaultDb;
   }
-  return cache;
+  return cache!;
 }
 
-export function saveDb(db: Db): void {
+export async function getDb(): Promise<Db> {
+  return loadDb();
+}
+
+export async function saveDb(db: Db): Promise<void> {
   cache = db;
+
+  const redis = getRedis();
+  if (redis) {
+    try {
+      await redis.set(REDIS_KEY, JSON.stringify(db));
+      return;
+    } catch {
+      // fall through to file system
+    }
+  }
+
   fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   fs.writeFileSync(dbPath, JSON.stringify(db, null, 2), "utf-8");
 }
 
-export function getSettings(): Settings {
-  return getDb().settings;
+export async function getSettings(): Promise<Settings> {
+  return (await loadDb()).settings;
 }
 
-export function getIsOpen(): boolean {
-  return getDb().settings.isOpen;
+export async function getIsOpen(): Promise<boolean> {
+  return (await loadDb()).settings.isOpen;
 }
 
-export function mergeServices(): ServiceRecord[] {
-  const db = getDb();
-  if (db.services.length > 0) return db.services;
-  return defaultDb.services;
+export async function mergeServices(): Promise<ServiceRecord[]> {
+  const db = await loadDb();
+  return db.services;
 }
 
-export function mergeDoctors(): DoctorRecord[] {
-  const db = getDb();
-  if (db.doctors.length > 0) return db.doctors;
-  return defaultDb.doctors;
+export async function mergeDoctors(): Promise<DoctorRecord[]> {
+  const db = await loadDb();
+  return db.doctors;
 }

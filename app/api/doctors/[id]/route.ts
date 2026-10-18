@@ -5,7 +5,7 @@ import { getDb, saveDb } from "@/lib/store";
 type Params = Promise<{ id: string }>;
 
 async function findDoctor(id: string) {
-  const db = getDb();
+  const db = await getDb();
   const index = db.doctors.findIndex((d) => d.id === id);
   return { db, index };
 }
@@ -22,7 +22,7 @@ export async function PUT(request: Request, { params }: { params: Params }) {
       return NextResponse.json({ error: "الطبيب غير موجود" }, { status: 404 });
     }
     db.doctors[index] = { ...db.doctors[index], ...doctor, id };
-    saveDb(db);
+    await saveDb(db);
     return NextResponse.json(db.doctors[index]);
   } catch {
     return NextResponse.json({ error: "خطأ في التحديث" }, { status: 400 });
@@ -39,6 +39,6 @@ export async function DELETE(_request: Request, { params }: { params: Params }) 
     return NextResponse.json({ error: "الطبيب غير موجود" }, { status: 404 });
   }
   db.doctors.splice(index, 1);
-  saveDb(db);
+  await saveDb(db);
   return NextResponse.json({ ok: true });
 }

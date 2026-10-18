@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
   return (
     <>
       <section aria-labelledby="page-title" className="border-b border-charcoal/10 bg-surface">
@@ -37,7 +37,7 @@ export default function ServicesPage() {
 
       <section aria-label="Services list">
         <Container className="grid gap-6 py-16 sm:grid-cols-2 sm:py-20 lg:grid-cols-3">
-          {mergeServices().map((service, i) => (
+          {(await mergeServices()).map((service, i) => (
             <Reveal key={service.slug} delay={(i % 3) * 100}>
               <ServiceCard service={service} />
             </Reveal>
