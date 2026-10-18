@@ -41,7 +41,9 @@ type DoctorRecord = {
 
 type Settings = {
   isOpen: boolean;
+  autoStatus: boolean;
   hours: { days: string; hours: string; closed?: boolean }[];
+  schedule: { days: number[]; open: string; close: string; closed?: boolean }[];
 };
 
 const iconOptions = [
@@ -463,36 +465,63 @@ export default function AdminDashboard() {
               <div className="flex flex-col gap-4 rounded-xl border border-charcoal/10 bg-surface p-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-charcoal">حالة العيادة</p>
-                    <p className="text-xs text-muted">لما تكون مقفلة هيظهر إشعار في الصفحة الرئيسية</p>
+                    <p className="text-sm font-semibold text-charcoal">الحالة التلقائية</p>
+                    <p className="text-xs text-muted">مفتوحة تلقائياً في مواعيد العمل ومقفولة برّاها</p>
                   </div>
                   <button
-                    onClick={() => setSettings({ ...settings, isOpen: !settings.isOpen })}
+                    onClick={() => setSettings({ ...settings, autoStatus: !settings.autoStatus })}
+                    role="switch"
+                    aria-checked={settings.autoStatus}
+                    className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${settings.autoStatus ? "bg-primary" : "bg-charcoal/30"}`}
+                  >
+                    <span
+                      className={`absolute top-1 h-6 w-6 rounded-full bg-white transition-all ${settings.autoStatus ? "right-1" : "right-7"}`}
+                    />
+                  </button>
+                </div>
+                <p className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${settings.autoStatus ? "bg-mint text-primary" : "bg-charcoal/5 text-muted"}`}>
+                  {settings.autoStatus ? "الحالة التلقائية مفعّلة" : "الحالة التلقائية متوقفة — التحكم اليدوي شغال"}
+                </p>
+              </div>
+
+              <div className={`flex flex-col gap-4 rounded-xl border p-5 ${settings.autoStatus ? "border-charcoal/10 bg-surface opacity-60" : "border-charcoal/10 bg-surface"}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-charcoal">التحكم اليدوي</p>
+                    <p className="text-xs text-muted">{settings.autoStatus ? "متوقف لأن الحالة التلقائية مفعّلة" : "لما تكون مقفلة هيظهر إشعار في الصفحة الرئيسية"}</p>
+                  </div>
+                  <button
+                    onClick={() => !settings.autoStatus && setSettings({ ...settings, isOpen: !settings.isOpen })}
+                    disabled={settings.autoStatus}
                     role="switch"
                     aria-checked={settings.isOpen}
-                    className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${settings.isOpen ? "bg-primary" : "bg-charcoal/30"}`}
+                    className={`relative h-8 w-14 shrink-0 rounded-full transition-colors disabled:cursor-not-allowed ${settings.isOpen ? "bg-primary" : "bg-charcoal/30"}`}
                   >
                     <span
                       className={`absolute top-1 h-6 w-6 rounded-full bg-white transition-all ${settings.isOpen ? "right-1" : "right-7"}`}
                     />
                   </button>
                 </div>
-                <p className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${settings.isOpen ? "bg-mint text-primary" : "bg-red-50 text-red-700"}`}>
-                  {settings.isOpen ? "العيادة مفتوحة الآن" : "العيادة مقفلة الآن — الزشاف هيشوفوا الإشعار"}
-                </p>
-                <button
-                  onClick={() => {
-                    setSettings({ ...settings, isOpen: !settings.isOpen });
-                    setTimeout(saveSettings, 100);
-                  }}
-                  className={`inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3.5 text-sm font-bold text-white transition-colors ${
-                    settings.isOpen
-                      ? "bg-red-600 hover:bg-red-700"
-                      : "bg-primary hover:bg-primary-dark"
-                  }`}
-                >
-                  {settings.isOpen ? "اغلق العياده" : "افتح العياده"}
-                </button>
+                {!settings.autoStatus && (
+                  <>
+                    <p className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${settings.isOpen ? "bg-mint text-primary" : "bg-red-50 text-red-700"}`}>
+                      {settings.isOpen ? "العيادة مفتوحة الآن" : "العيادة مقفلة الآن — الزشاف هيشوفوا الإشعار"}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSettings({ ...settings, isOpen: !settings.isOpen });
+                        setTimeout(saveSettings, 100);
+                      }}
+                      className={`inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3.5 text-sm font-bold text-white transition-colors ${
+                        settings.isOpen
+                          ? "bg-red-600 hover:bg-red-700"
+                          : "bg-primary hover:bg-primary-dark"
+                      }`}
+                    >
+                      {settings.isOpen ? "اغلق العياده" : "افتح العياده"}
+                    </button>
+                  </>
+                )}
               </div>
 
               <div className="rounded-xl border border-charcoal/10 bg-surface p-5">

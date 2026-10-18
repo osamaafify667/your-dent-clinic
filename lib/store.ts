@@ -29,7 +29,9 @@ export type DoctorRecord = {
 
 export type Settings = {
   isOpen: boolean;
+  autoStatus: boolean;
   hours: { days: string; hours: string; closed?: boolean }[];
+  schedule: { days: number[]; open?: string; close?: string; closed?: boolean }[];
 };
 
 export type Db = {
@@ -58,7 +60,12 @@ const defaultDb: Db = {
   doctors: defaultDoctors,
   settings: {
     isOpen: true,
+    autoStatus: true,
     hours: [{ days: "من السبت الي الخميس", hours: "من 4:00 مساءً الي 11:00 مساءً" }],
+    schedule: [
+      { days: [6, 0, 1, 2, 3, 4], open: "16:00", close: "23:00" },
+      { days: [5], closed: true },
+    ],
   },
 };
 
@@ -126,7 +133,43 @@ export async function getSettings(): Promise<Settings> {
 }
 
 export async function getIsOpen(): Promise<boolean> {
-  return (await loadDb()).settings.isOpen;
+  const settings = (await loadDb()).settings;
+  if (!settings.autoStatus) return settings.isOpen;
+  return computeIsOpen(settings);
+}
+
+export function computeIsOpen(settings: Settings): boolean {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Africa/Cairo",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+
+  const weekdayMap: Record<string, number> = {
+    Su: 0, Mo: 1, Tu: 2, We: 3, Th: 4, Fr: 5, Sa: 6,
+  };
+
+  let day = -1;
+  let hour = 0;
+  let minute = 0;
+  for (const part of parts) {
+    if (part.type === "weekday") day = weekdayMap[part.value] ?? -1;
+    if (part.type === "hour") hour = parseInt(part.value, 10) % 24;
+    if (part.type === "minute") minute = parseInt(part.value, 10);
+  }
+
+  for (const slot of settings.schedule) {
+    if (!slot.days.includes(day)) continue;
+    if (slot.closed || !slot.open || !slot.close) return false;
+    const [openH, openM] = slot.open.split(":").map(Number);
+    const [closeH, closeM] = slot.close.split(":").map(Number);
+    const now = hour * 60 + minute;
+    return now >= openH * 60 + openM && now < closeH * 60 + closeM;
+  }
+
+  return false;
 }
 
 export async function mergeServices(): Promise<ServiceRecord[]> {

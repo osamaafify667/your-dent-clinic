@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
-import { getSettings } from "@/lib/store";
+import { getDb, computeIsOpen, getSettings } from "@/lib/store";
 
 export async function GET() {
   const settings = await getSettings();
+  const isOpen = settings.autoStatus
+    ? computeIsOpen(settings)
+    : settings.isOpen;
   return NextResponse.json({
-    isOpen: settings.isOpen,
+    isOpen,
+    autoStatus: settings.autoStatus,
     hours: settings.hours,
   });
 }

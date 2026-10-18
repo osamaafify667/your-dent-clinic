@@ -99,12 +99,12 @@ export function Hero() {
           </Reveal>
         </div>
 
-        <Reveal delay={200} className="relative">
-          <div className="relative mx-auto max-w-lg">
+        <Reveal delay={200} className="relative order-first flex items-center justify-center lg:order-none">
+          <div className="relative w-full max-w-md lg:max-w-none">
             <img
               src="/images/hero.svg"
               alt={lang === "ar" ? "رسم توضيحي لعيادة Your Dent Clinic" : "Your Dent Clinic illustration"}
-              className="w-full"
+              className="mx-auto w-full"
               width={800}
               height={640}
             />
